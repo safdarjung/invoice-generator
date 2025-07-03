@@ -54,6 +54,6 @@ if not os.path.exists("templates"):
 # Serve static files from the React build directory
 app.mount(
     "/",
-    StaticFiles(directory="../../frontend/build", html=True),
+    StaticFiles(directory="/home/safdar1/invoice-generator/invoice-generator/frontend/build", html=True),
     name="static",
 )
