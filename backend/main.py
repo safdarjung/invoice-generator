@@ -12,7 +12,7 @@ import os
 app = FastAPI()
 
 # CORS Middleware
-origins = ["http://localhost:3000"]
+origins = ["http://localhost:3000", "https://safdar1.pythonanywhere.com"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -21,9 +21,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class ApiKeyRequest(BaseModel):
+    api_key: str
+
 class ChatbotRequest(BaseModel):
     command: str
     form_data: Dict[str, Any]
+
+@app.post("/set_api_key")
+async def set_api_key(request: ApiKeyRequest):
+    os.environ["GEMINI_API_KEY"] = request.api_key
+    return {"message": "API key set successfully"}
 
 @app.post("/generate_pdf")
 async def generate_pdf_endpoint(form_data: Dict[str, Any]):
@@ -52,8 +60,11 @@ if not os.path.exists("templates"):
     os.makedirs("templates")
 
 # Serve static files from the React build directory
+# Construct the path to the frontend build directory
+static_files_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "build")
+
 app.mount(
     "/",
-    StaticFiles(directory="/home/safdar1/invoice-generator/invoice-generator/frontend/build", html=True),
+    StaticFiles(directory=static_files_dir, html=True),
     name="static",
 )

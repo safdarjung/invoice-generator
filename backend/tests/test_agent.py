@@ -50,7 +50,7 @@ def test_invoice_agent(mock_create_pdf, sample_invoice_data):
     final_state = agent_app.invoke(initial_state)
 
     # Assert that create_pdf was called with the correct data
-    mock_create_pdf.assert_called_once_with(sample_quotation_data, file_path="generated_document.pdf")
+    mock_create_pdf.assert_called_once_with(sample_invoice_data, file_path="generated_document.pdf")
     # Assert that the final state contains the correct pdf_path
     assert final_state['pdf_path'] == "mock_invoice.pdf"
 

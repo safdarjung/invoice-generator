@@ -32,15 +32,44 @@ def process_command(command: str, form_data: dict) -> dict:
             response_message = f"Client GSTIN updated to {form_data['client_gstin']}."
 
     # Add item
-    elif "add item" in command:
-        match = re.search(r"add item (.+), price (\d+\.?\d*)", command)
-        if match:
-            description = match.group(1).strip()
-            rate = float(match.group(2))
-            quantity = 1  # Default quantity
-            new_item = {"description": description, "rate": rate, "quantity": quantity, "hsn_code": None}
+    elif "add" in command and "item" in command:
+        try:
+            command_data = command.split("item", 1)[1]
+            if command_data.startswith(":"):
+                command_data = command_data[1:].strip()
+
+            parts = [p.strip() for p in command_data.split(",")]
+            description = parts[0]
+            
+            item_data = {"description": description}
+            
+            for part in parts[1:]:
+                if ":" in part:
+                    key, value = part.split(":", 1)
+                    key = key.strip()
+                    value = value.strip()
+                    if key in ["hsn", "rate", "price", "qty"]:
+                        item_data[key] = value
+
+            if "price" in item_data:
+                item_data["rate"] = item_data["price"]
+            
+            if "rate" not in item_data:
+                raise ValueError("Rate/Price is required to add an item.")
+
+            new_item = {
+                "description": item_data["description"],
+                "hsn_code": item_data.get("hsn"),
+                "rate": float(item_data["rate"]),
+                "quantity": int(item_data.get("qty", 1))
+            }
+            
             form_data["items"].append(new_item)
-            response_message = f"Added item: {description} at {rate}."
+            response_message = f"Added item: {new_item['description']}."
+
+        except Exception as e:
+            response_message = f"Error adding item: {e}. Please use the format: add item <desc>, hsn <hs_code>, rate <rate>, qty <qty>"
+
 
     # Remove item
     elif "remove item number" in command:

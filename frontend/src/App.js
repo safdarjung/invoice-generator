@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const API_URL = process.env.NODE_ENV === 'production' ? 'https://safdar1.pythonanywhere.com' : 'http://localhost:8000';
+
 function App() {
   const [formData, setFormData] = useState({
     client_name: '',
@@ -21,6 +23,8 @@ function App() {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState('');
+  const [geminiApiKey, setGeminiApiKey] = useState('');
+  const [apiKeyMessage, setApiKeyMessage] = useState('');
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
@@ -52,12 +56,24 @@ function App() {
     const uploadData = new FormData();
     uploadData.append('file', templateFile);
 
-    const response = await fetch('https://safdar1.pythonanywhere.com/upload_template', {
+    const response = await fetch(`${API_URL}/upload_template`, {
       method: 'POST',
       body: uploadData,
     });
     const data = await response.json();
     setUploadMessage(data.message);
+  };
+
+  const handleApiKeySubmit = async () => {
+    const response = await fetch(`${API_URL}/set_api_key`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ api_key: geminiApiKey }),
+    });
+    const data = await response.json();
+    setApiKeyMessage(data.message);
   };
 
   const generatePdf = async (isInvoice) => {
@@ -67,7 +83,7 @@ function App() {
         payload.invoice_date = null;
     }
 
-    const response = await fetch('https://safdar1.pythonanywhere.com/generate_pdf', {
+    const response = await fetch(`${API_URL}/generate_pdf`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -89,7 +105,7 @@ function App() {
     const newChatHistory = [...chatHistory, { role: 'user', content: chatInput }];
     setChatHistory(newChatHistory);
 
-    const response = await fetch('https://safdar1.pythonanywhere.com/chatbot', {
+    const response = await fetch(`${API_URL}/chatbot`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -101,6 +117,10 @@ function App() {
     setFormData(data.form_data);
     setChatHistory([...newChatHistory, { role: 'assistant', content: data.chatbot_response }]);
     setChatInput('');
+
+    // Regenerate the PDF with the updated form data
+    const isInvoice = !!data.form_data.invoice_number;
+    generatePdf(isInvoice, data.form_data);
   };
 
 
@@ -109,6 +129,19 @@ function App() {
         <div className="row">
             <div className="col-md-5">
                 <h1>Invoice and Quotation Generator</h1>
+
+                <div className="card mb-4">
+                    <div className="card-body">
+                        <h5 className="card-title">Set Gemini API Key</h5>
+                        <div className="form-group">
+                            <input type="text" className="form-control" placeholder="Enter your Gemini API Key" value={geminiApiKey} onChange={(e) => setGeminiApiKey(e.target.value)} />
+                        </div>
+                        <button type="button" className="btn btn-primary" onClick={handleApiKeySubmit}>
+                            Set API Key
+                        </button>
+                        {apiKeyMessage && <p className="mt-2">{apiKeyMessage}</p>}
+                    </div>
+                </div>
 
                 <div className="card mb-4">
                     <div className="card-body">

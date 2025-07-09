@@ -2,8 +2,7 @@ import os
 import sys
 
 # Add your project directory to the sys.path
-# Assuming your project structure is /home/your_username/invoice-generator/backend
-path = '/home/safdar1/invoice-generator/backend'
+path = os.path.dirname(os.path.abspath(__file__))
 if path not in sys.path:
     sys.path.insert(0, path)
 
