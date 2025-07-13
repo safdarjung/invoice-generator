@@ -6,3 +6,6 @@ langchain
 langgraph
 pytest
 gunicorn
+langchain-google-genai
+python-dotenv
+pydantic

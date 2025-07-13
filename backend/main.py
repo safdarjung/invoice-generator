@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
-from agent import app as agent_app
-from chatbot_agent import chatbot_app
+from .agent import app as agent_app
+from .chatbot_agent import chatbot_app
 from langchain_core.messages import HumanMessage
 import os
 
