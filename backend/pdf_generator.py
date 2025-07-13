@@ -71,7 +71,11 @@ def generate_quotation_paragraph(form_data, styles):
         story.append(Spacer(1, 0.1*inch))
     return story
 
-def create_pdf(form_data, file_path="invoice.pdf"):
+import uuid
+
+def create_pdf(form_data, file_path=None):
+    if file_path is None:
+        file_path = f"/tmp/{uuid.uuid4()}.pdf"
     doc = SimpleDocTemplate(file_path, pagesize=letter)
     styles = getSampleStyleSheet()
 

@@ -52,13 +52,13 @@ async def chatbot_endpoint(request: ChatbotRequest):
 
 @app.post("/upload_template")
 async def upload_template(file: UploadFile = File(...)):
-    template_path = os.path.join("templates", file.filename)
+    # Save uploaded files to the /tmp/ directory to ensure write permissions
+    template_path = f"/tmp/{file.filename}"
     with open(template_path, "wb") as buffer:
         buffer.write(file.file.read())
-    return {"message": "Template uploaded successfully"}
-
-if not os.path.exists("templates"):
-    os.makedirs("templates")
+    # In a real app, you might store this path in a database.
+    # For now, we just confirm it was "uploaded".
+    return {"message": f"Template '{file.filename}' uploaded successfully."}
 
 # Serve static files from the React build directory
 static_files_dir = os.path.join(os.path.dirname(__file__), "..", "frontend", "build")
