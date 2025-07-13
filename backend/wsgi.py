@@ -6,7 +6,8 @@ path = os.path.dirname(os.path.abspath(__file__))
 if path not in sys.path:
     sys.path.insert(0, path)
 
-# Set the FLASK_APP environment variable (even for FastAPI, it's a common practice for WSGI)
-os.environ['FLASK_APP'] = 'main' # Or 'main:app' if you prefer
+# Set the FLASK_APP environment variable (not strictly needed for FastAPI, but harmless)
+os.environ['FLASK_APP'] = 'main'
 
-from main import app as application # 'application' is the variable PythonAnywhere looks for
+# Import the FastAPI app for WSGI servers (PythonAnywhere looks for 'application')
+from main import app as application

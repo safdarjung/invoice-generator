@@ -4,10 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
-from .agent import app as agent_app
-from .chatbot_agent import chatbot_app
+from agent import app as agent_app
+from chatbot_agent import chatbot_app
 from langchain_core.messages import HumanMessage
 import os
+import tempfile
 
 app = FastAPI()
 
@@ -52,8 +53,9 @@ async def chatbot_endpoint(request: ChatbotRequest):
 
 @app.post("/upload_template")
 async def upload_template(file: UploadFile = File(...)):
-    # Save uploaded files to the /tmp/ directory to ensure write permissions
-    template_path = f"/tmp/{file.filename}"
+    # Save uploaded files to the system temp directory for cross-platform compatibility
+    template_dir = tempfile.gettempdir()
+    template_path = os.path.join(template_dir, file.filename)
     with open(template_path, "wb") as buffer:
         buffer.write(file.file.read())
     # In a real app, you might store this path in a database.
@@ -68,3 +70,8 @@ app.mount(
     StaticFiles(directory=static_files_dir, html=True),
     name="static",
 )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=5000)
+# Note: On PythonAnywhere, use wsgi.py to serve the app

@@ -1,6 +1,6 @@
 from typing import TypedDict, Literal
 from langgraph.graph import StateGraph, END
-from .pdf_generator import create_pdf
+from pdf_generator import create_pdf
 
 class AgentState(TypedDict):
     form_data: dict

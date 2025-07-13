@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API_URL = process.env.NODE_ENV === 'production' ? 'https://safdar1.pythonanywhere.com' : 'http://localhost:8000';
+const API_URL = process.env.NODE_ENV === 'production' ? 'https://safdar1.pythonanywhere.com' : 'http://localhost:5000';
 
 function App() {
   const [formData, setFormData] = useState({
