@@ -43,10 +43,10 @@ async def generate_pdf_endpoint(request: PdfRequest):
 
 @app.post("/chatbot")
 async def chatbot_endpoint(request: ChatbotRequest):
-    # The api_key is available via request.api_key if an agent needs it in the future
     initial_state = {
         "messages": [HumanMessage(content=request.command)],
-        "form_data": request.form_data
+        "form_data": request.form_data,
+        "api_key": request.api_key or ""
     }
     final_state = chatbot_app.invoke(initial_state)
     return {"form_data": final_state["form_data"], "chatbot_response": final_state["messages"][-1].content}
