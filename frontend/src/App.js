@@ -24,7 +24,6 @@ function App() {
   const [chatHistory, setChatHistory] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [geminiApiKey, setGeminiApiKey] = useState('');
-  const [apiKeyMessage, setApiKeyMessage] = useState('');
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
@@ -64,18 +63,6 @@ function App() {
     setUploadMessage(data.message);
   };
 
-  const handleApiKeySubmit = async () => {
-    const response = await fetch(`${API_URL}/set_api_key`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ api_key: geminiApiKey }),
-    });
-    const data = await response.json();
-    setApiKeyMessage(data.message);
-  };
-
   const generatePdf = async (isInvoice) => {
     const payload = { ...formData };
     if (!isInvoice) {
@@ -88,7 +75,7 @@ function App() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ form_data: payload, api_key: geminiApiKey }),
     });
 
     if (response.ok) {
@@ -110,7 +97,7 @@ function App() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ command: chatInput, form_data: formData }),
+        body: JSON.stringify({ command: chatInput, form_data: formData, api_key: geminiApiKey }),
     });
 
     const data = await response.json();
@@ -132,14 +119,10 @@ function App() {
 
                 <div className="card mb-4">
                     <div className="card-body">
-                        <h5 className="card-title">Set Gemini API Key</h5>
+                        <h5 className="card-title">Enter Your Gemini API Key</h5>
                         <div className="form-group">
-                            <input type="text" className="form-control" placeholder="Enter your Gemini API Key" value={geminiApiKey} onChange={(e) => setGeminiApiKey(e.target.value)} />
+                            <input type="text" className="form-control" placeholder="Gemini API Key" value={geminiApiKey} onChange={(e) => setGeminiApiKey(e.target.value)} />
                         </div>
-                        <button type="button" className="btn btn-primary" onClick={handleApiKeySubmit}>
-                            Set API Key
-                        </button>
-                        {apiKeyMessage && <p className="mt-2">{apiKeyMessage}</p>}
                     </div>
                 </div>
 
