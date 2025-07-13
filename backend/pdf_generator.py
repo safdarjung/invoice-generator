@@ -4,6 +4,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.lib.enums import TA_CENTER
+import uuid
+import os
 
 def generate_invoice_table(form_data, styles):
     story = []
@@ -71,11 +73,11 @@ def generate_quotation_paragraph(form_data, styles):
         story.append(Spacer(1, 0.1*inch))
     return story
 
-import uuid
-
 def create_pdf(form_data, file_path=None):
+    # Always write to the /tmp directory on PythonAnywhere
     if file_path is None:
         file_path = f"/tmp/{uuid.uuid4()}.pdf"
+        
     doc = SimpleDocTemplate(file_path, pagesize=letter)
     styles = getSampleStyleSheet()
 
