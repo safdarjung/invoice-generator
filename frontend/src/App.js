@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const API_URL = process.env.NODE_ENV === 'production' ? 'https://safdar1.pythonanywhere.com' : 'http://localhost:5000';
-
 function App() {
   const [formData, setFormData] = useState({
     client_name: '',
@@ -55,7 +53,7 @@ function App() {
     const uploadData = new FormData();
     uploadData.append('file', templateFile);
 
-    const response = await fetch(`${API_URL}/upload_template`, {
+    const response = await fetch('/upload_template', {
       method: 'POST',
       body: uploadData,
     });
@@ -70,7 +68,7 @@ function App() {
         payload.invoice_date = null;
     }
 
-    const response = await fetch(`${API_URL}/generate_pdf`, {
+    const response = await fetch('/generate_pdf', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +90,7 @@ function App() {
     const newChatHistory = [...chatHistory, { role: 'user', content: chatInput }];
     setChatHistory(newChatHistory);
 
-    const response = await fetch(`${API_URL}/chatbot`, {
+    const response = await fetch('/chatbot', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
